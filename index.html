@@ -888,7 +888,7 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
   <li>An "a=rtcp-rsize" line, as specified in <a href="#RFC5506">[RFC5506]</a>, Section 5.</li>
   <li>For each supported RTP header extension, an "a=extmap" line, as specified in <a href="#RFC5285">[RFC5285]</a>, Section 5. The list of header extensions that SHOULD/MUST be supported is specified in <a href="#I-D.ietf-rtcweb-rtp-usage">[I-D.ietf-rtcweb-rtp-usage]</a>, Section 5.2. Any header extensions that require encryption MUST be specified as indicated in <a href="#RFC6904">[RFC6904]</a>, Section 4.</li>
   <li>For each supported RTCP feedback mechanism, an "a=rtcp-fb" mechanism, as specified in <a href="#RFC4585">[RFC4585]</a>, Section 4.2. The list of RTCP feedback mechanisms that SHOULD/MUST be supported is specified in <a href="#I-D.ietf-rtcweb-rtp-usage">[I-D.ietf-rtcweb-rtp-usage]</a>, Section 5.1.</li>
-  <li>An "a=ssrc" line, as specified in <a href="#RFC5576">[RFC5576]</a>, Section 4.1, indicating the SSRC to be used for sending media, along with the mandatory "cname" source attribute, as specified in Section 6.1, indicating the CNAME for the source. The CNAME must be generated in accordance with draft-rescorla-random-cname-00. [OPEN ISSUE: How are CNAMEs specified for MSTs? Are they randomly generated for each MediaStream? If so, can two MediaStreams be synced?]</li>
+  <li>An "a=ssrc" line, as specified in <a href="#RFC5576">[RFC5576]</a>, Section 4.1, indicating the SSRC to be used for sending media, along with the mandatory "cname" source attribute, as specified in Section 6.1, indicating the CNAME for the source. The CNAME must be generated in accordance with <a href="#RFC7022">[RFC7022]</a>. [OPEN ISSUE: How are CNAMEs specified for MSTs? Are they randomly generated for each MediaStream? If so, can two MediaStreams be synced?]</li>
   <li>If RTX is supported for this media type, another "a=ssrc" line with the RTX SSRC, and an "a=ssrc-group" line, as specified in <a href="#RFC5576">[RFC5576]</a>, section 4.2, with semantics set to "FID" and including the primary and RTX SSRCs.</li>
   <li>If FEC is supported for this media type, another "a=ssrc" line with the FEC SSRC, and an "a=ssrc-group" line, as specified in <a href="#RFC5576">[RFC5576]</a>, section 4.2, with semantics set to "FEC" and including the primary and FEC SSRCs.</li>
   <li>[OPEN ISSUE: Handling of a=imageattr]</li>
@@ -905,7 +905,7 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
   <li>"a=key-mgmt"</li>
   <li>"a=ice-lite"</li>
 </ul>
-<p id="rfc.section.5.2.1.p.13">Note that when BUNDLE is used, any additional attributes that are added MUST follow the advice in <a href="#I-D.nandakumar-mmusic-sdp-mux-attributes">[I-D.nandakumar-mmusic-sdp-mux-attributes]</a> on how those attributes interact with BUNDLE.</p>
+<p id="rfc.section.5.2.1.p.13">Note that when BUNDLE is used, any additional attributes that are added MUST follow the advice in <a href="#I-D.ietf-mmusic-sdp-mux-attributes">[I-D.ietf-mmusic-sdp-mux-attributes]</a> on how those attributes interact with BUNDLE.</p>
 <h1 id="rfc.section.5.2.2"><a href="#rfc.section.5.2.2">5.2.2.</a> Subsequent Offers</h1>
 <p id="rfc.section.5.2.2.p.1">When createOffer is called a second (or later) time, or is called after a local description has already been installed, the processing is somewhat different than for an initial offer.</p>
 <p id="rfc.section.5.2.2.p.2">If the initial offer was not applied using setLocalDescription, meaning the PeerConnection is still in the "stable" state, the steps for generating an initial offer should be followed, subject to the following restriction: </p>
@@ -1058,6 +1058,12 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
     </tr>
     <tr>
       <td class="reference">
+        <b id="I-D.ietf-mmusic-sdp-mux-attributes">[I-D.ietf-mmusic-sdp-mux-attributes]</b>
+      </td>
+      <td class="top"><a>Nandakumar, S.</a>, "<a href="http://tools.ietf.org/html/draft-ietf-mmusic-sdp-mux-attributes-01">A Framework for SDP Attributes when Multiplexing</a>", Internet-Draft draft-ietf-mmusic-sdp-mux-attributes-01, February 2014.</td>
+    </tr>
+    <tr>
+      <td class="reference">
         <b id="I-D.ietf-rtcweb-audio">[I-D.ietf-rtcweb-audio]</b>
       </td>
       <td class="top"><a>Valin, J.</a> and <a>C. Bran</a>, "<a href="http://tools.ietf.org/html/draft-ietf-rtcweb-audio-02">WebRTC Audio Codec and Processing Requirements</a>", Internet-Draft draft-ietf-rtcweb-audio-02, August 2013.</td>
@@ -1067,12 +1073,6 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
         <b id="I-D.ietf-rtcweb-rtp-usage">[I-D.ietf-rtcweb-rtp-usage]</b>
       </td>
       <td class="top"><a>Perkins, C.</a>, <a>Westerlund, M.</a> and <a>J. Ott</a>, "<a href="http://tools.ietf.org/html/draft-ietf-rtcweb-rtp-usage-09">Web Real-Time Communication (WebRTC): Media Transport and Use of RTP</a>", Internet-Draft draft-ietf-rtcweb-rtp-usage-09, September 2013.</td>
-    </tr>
-    <tr>
-      <td class="reference">
-        <b id="I-D.nandakumar-mmusic-sdp-mux-attributes">[I-D.nandakumar-mmusic-sdp-mux-attributes]</b>
-      </td>
-      <td class="top"><a>Nandakumar, S.</a>, "<a href="http://tools.ietf.org/html/draft-nandakumar-mmusic-sdp-mux-attributes-03">A Framework for SDP Attributes when Multiplexing</a>", Internet-Draft draft-nandakumar-mmusic-sdp-mux-attributes-03, July 2013.</td>
     </tr>
     <tr>
       <td class="reference">
@@ -1151,6 +1151,12 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
         <b id="RFC6904">[RFC6904]</b>
       </td>
       <td class="top"><a>Lennox, J.</a>, "<a href="http://tools.ietf.org/html/rfc6904">Encryption of Header Extensions in the Secure Real-time Transport Protocol (SRTP)</a>", RFC 6904, April 2013.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC7022">[RFC7022]</b>
+      </td>
+      <td class="top"><a>Begen, A.</a>, <a>Perkins, C.</a>, <a>Wing, D.</a> and <a>E. Rescorla</a>, "<a href="http://tools.ietf.org/html/rfc7022">Guidelines for Choosing RTP Control Protocol (RTCP) Canonical Names (CNAMEs)</a>", RFC 7022, September 2013.</td>
     </tr>
   </tbody>
 </table>

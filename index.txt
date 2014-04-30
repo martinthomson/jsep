@@ -98,14 +98,14 @@ Table of Contents
        5.2.1.  Initial Offers  . . . . . . . . . . . . . . . . . . .  23
        5.2.2.  Subsequent Offers . . . . . . . . . . . . . . . . . .  27
        5.2.3.  Constraints Handling  . . . . . . . . . . . . . . . .  29
-         5.2.3.1.  OfferToReceiveAudio . . . . . . . . . . . . . . .  30
+         5.2.3.1.  OfferToReceiveAudio . . . . . . . . . . . . . . .  29
          5.2.3.2.  OfferToReceiveVideo . . . . . . . . . . . . . . .  30
          5.2.3.3.  VoiceActivityDetection  . . . . . . . . . . . . .  30
          5.2.3.4.  IceRestart  . . . . . . . . . . . . . . . . . . .  30
-     5.3.  Generating an Answer  . . . . . . . . . . . . . . . . . .  31
+     5.3.  Generating an Answer  . . . . . . . . . . . . . . . . . .  30
        5.3.1.  Initial Answers . . . . . . . . . . . . . . . . . . .  31
-       5.3.2.  Subsequent Answers  . . . . . . . . . . . . . . . . .  35
-       5.3.3.  Constraints Handling  . . . . . . . . . . . . . . . .  35
+       5.3.2.  Subsequent Answers  . . . . . . . . . . . . . . . . .  34
+       5.3.3.  Constraints Handling  . . . . . . . . . . . . . . . .  34
 
 
 
@@ -114,7 +114,7 @@ Uberti & Jennings        Expires August 17, 2014                [Page 2]
 Internet-Draft                    JSEP                     February 2014
 
 
-     5.4.  Parsing an Offer  . . . . . . . . . . . . . . . . . . . .  35
+     5.4.  Parsing an Offer  . . . . . . . . . . . . . . . . . . . .  34
      5.5.  Parsing an Answer . . . . . . . . . . . . . . . . . . . .  35
      5.6.  Applying a Local Description  . . . . . . . . . . . . . .  35
      5.7.  Applying a Remote Description . . . . . . . . . . . . . .  35
@@ -1426,9 +1426,9 @@ Internet-Draft                    JSEP                     February 2014
       indicating the SSRC to be used for sending media, along with the
       mandatory "cname" source attribute, as specified in Section 6.1,
       indicating the CNAME for the source.  The CNAME must be generated
-      in accordance with draft-rescorla-random-cname-00.  [OPEN ISSUE:
-      How are CNAMEs specified for MSTs?  Are they randomly generated
-      for each MediaStream?  If so, can two MediaStreams be synced?]
+      in accordance with [RFC7022].  [OPEN ISSUE: How are CNAMEs
+      specified for MSTs?  Are they randomly generated for each
+      MediaStream?  If so, can two MediaStreams be synced?]
 
    o  If RTX is supported for this media type, another "a=ssrc" line
       with the RTX SSRC, and an "a=ssrc-group" line, as specified in
@@ -1488,9 +1488,8 @@ Internet-Draft                    JSEP                     February 2014
    o  "a=ice-lite"
 
    Note that when BUNDLE is used, any additional attributes that are
-   added MUST follow the advice in
-   [I-D.nandakumar-mmusic-sdp-mux-attributes] on how those attributes
-   interact with BUNDLE.
+   added MUST follow the advice in [I-D.ietf-mmusic-sdp-mux-attributes]
+   on how those attributes interact with BUNDLE.
 
 5.2.2.  Subsequent Offers
 
@@ -1505,7 +1504,8 @@ Internet-Draft                    JSEP                     February 2014
 
    o  The fields of the "o=" line MUST stay the same except for the
       <session-version> field, which MUST increment if the session
-
+      description changes in any way, including the addition of ICE
+      candidates.
 
 
 
@@ -1513,9 +1513,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 27]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-      description changes in any way, including the addition of ICE
-      candidates.
 
    If the initial offer was applied using setLocalDescription, but an
    answer from the remote side has not yet been applied, meaning the
@@ -1562,6 +1559,9 @@ Internet-Draft                    JSEP                     February 2014
       [RFC3264], Section 8.  The disposition of this section will depend
       on the state of the remote MediaStreamTrack associated with this
       m= section.  If one exists, and it is still in the "live" state,
+      the new m= section MUST be marked as "a=recvonly", with no
+      "a=msid" or related attributes present.  If no remote
+      MediaStreamTrack exists, or it is in the "ended" state, the m=
 
 
 
@@ -1570,9 +1570,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 28]
 Internet-Draft                    JSEP                     February 2014
 
 
-      the new m= section MUST be marked as "a=recvonly", with no
-      "a=msid" or related attributes present.  If no remote
-      MediaStreamTrack exists, or it is in the "ended" state, the m=
       section MUST be marked as rejected, by setting the port to zero,
       as indicated in [RFC3264], Section 8.2.
 
@@ -1616,8 +1613,11 @@ Internet-Draft                    JSEP                     February 2014
    object.  Special processing is performed when generating a SDP
    description if the following constraints are present.
 
+5.2.3.1.  OfferToReceiveAudio
 
-
+   If the "OfferToReceiveAudio" constraint is specified, with a value of
+   "N", the offer MUST include N non-rejected m= sections with media
+   type "audio", even if fewer than N audio MediaStreamTracks have been
 
 
 
@@ -1626,11 +1626,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 29]
 Internet-Draft                    JSEP                     February 2014
 
 
-5.2.3.1.  OfferToReceiveAudio
-
-   If the "OfferToReceiveAudio" constraint is specified, with a value of
-   "N", the offer MUST include N non-rejected m= sections with media
-   type "audio", even if fewer than N audio MediaStreamTracks have been
    added to the PeerConnection.  This allows the offerer to receive
    audio, including multiple independent streams, even when not sending
    it; accordingly, the directional attribute on the audio m= sections
@@ -1671,7 +1666,12 @@ Internet-Draft                    JSEP                     February 2014
    this constraint is specified on an initial offer, it has no effect
    (since a new ICE ufrag and pwd are already generated).
 
+5.3.  Generating an Answer
 
+   When createAnswer is called, a new SDP description must be created
+   that is compatible with the supplied remote description as well as
+   the requirements specified in [I-D.ietf-rtcweb-rtp-usage].  The exact
+   details of this process are explained below.
 
 
 
@@ -1681,13 +1681,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 30]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-5.3.  Generating an Answer
-
-   When createAnswer is called, a new SDP description must be created
-   that is compatible with the supplied remote description as well as
-   the requirements specified in [I-D.ietf-rtcweb-rtp-usage].  The exact
-   details of this process are explained below.
 
 5.3.1.  Initial Answers
 
@@ -1730,6 +1723,13 @@ Internet-Draft                    JSEP                     February 2014
    MediaStreamTrack has been stopped, and is therefore in state "ended",
    and no local MediaStreamTrack has been associated, the corresponding
    m= section in the answer MUST be marked as rejected by setting the
+   port in the m= line to zero, as indicated in [RFC3264], Section 6.,
+   and further processing for this m= section can be skipped.
+
+   Provided that is not the case, each m= section in the answer should
+   then generated as specified in [RFC3264], Section 6.1.  Because use
+   of DTLS is mandatory, the <proto> field MUST be set to "UDP/TLS/RTP/
+   SAVPF".  If the offer supports BUNDLE, all m= sections to be BUNDLEd
 
 
 
@@ -1738,13 +1738,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 31]
 Internet-Draft                    JSEP                     February 2014
 
 
-   port in the m= line to zero, as indicated in [RFC3264], Section 6.,
-   and further processing for this m= section can be skipped.
-
-   Provided that is not the case, each m= section in the answer should
-   then generated as specified in [RFC3264], Section 6.1.  Because use
-   of DTLS is mandatory, the <proto> field MUST be set to "UDP/TLS/RTP/
-   SAVPF".  If the offer supports BUNDLE, all m= sections to be BUNDLEd
    must use the same ICE credentials and candidates; all m= sections not
    being BUNDLEd must use unique ICE credentials and candidates.  Each
    m= section MUST include the following:
@@ -1785,6 +1778,13 @@ Internet-Draft                    JSEP                     February 2014
       "a=fmtp" line that references the payload type fo the primary
       codec, as specified in [RFC4588], Section 8.1.
 
+   o  For each supported FEC mechanism that is present in the offer, a
+      corresponding "a=rtpmap" line indicating the desired FEC codec.
+
+   o  "a=ice-ufrag" and "a=ice-passwd" lines, as specified in [RFC5245],
+      Section 15.4.
+
+
 
 
 
@@ -1793,12 +1793,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 32]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-   o  For each supported FEC mechanism that is present in the offer, a
-      corresponding "a=rtpmap" line indicating the desired FEC codec.
-
-   o  "a=ice-ufrag" and "a=ice-passwd" lines, as specified in [RFC5245],
-      Section 15.4.
 
    o  If the "trickle" ICE option is present in the offer, an "a=ice-
       options" line, with the "trickle" option, as specified in
@@ -1841,7 +1835,13 @@ Internet-Draft                    JSEP                     February 2014
       MUST be supported is specified in [I-D.ietf-rtcweb-rtp-usage],
       Section 5.1.
 
+   o  If a local MediaStreamTrack has been associated, an "a=ssrc" line,
+      as specified in [RFC5576], Section 4.1, indicating the SSRC to be
+      used for sending media.
 
+   o  If a local MediaStreamTrack has been associated, and RTX has been
+      negotiated for this m= section, another "a=ssrc" line with the RTX
+      SSRC, and an "a=ssrc-group" line, as specified in [RFC5576],
 
 
 
@@ -1850,13 +1850,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 33]
 Internet-Draft                    JSEP                     February 2014
 
 
-   o  If a local MediaStreamTrack has been associated, an "a=ssrc" line,
-      as specified in [RFC5576], Section 4.1, indicating the SSRC to be
-      used for sending media.
-
-   o  If a local MediaStreamTrack has been associated, and RTX has been
-      negotiated for this m= section, another "a=ssrc" line with the RTX
-      SSRC, and an "a=ssrc-group" line, as specified in [RFC5576],
       section 4.2, with semantics set to "FID" and including the primary
       and RTX SSRCs.
 
@@ -1895,6 +1888,13 @@ Internet-Draft                    JSEP                     February 2014
    The attributes prohibited in the creation of offers are also
    prohibited in the creation of answers.
 
+5.3.2.  Subsequent Answers
+
+5.3.3.  Constraints Handling
+
+5.4.  Parsing an Offer
+
+
 
 
 
@@ -1905,12 +1905,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 34]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-5.3.2.  Subsequent Answers
-
-5.3.3.  Constraints Handling
-
-5.4.  Parsing an Offer
 
 5.5.  Parsing an Answer
 
@@ -1955,17 +1949,18 @@ Internet-Draft                    JSEP                     February 2014
 
    o  change send resolution or frame rate
 
+   o  change desired recv resolution or frame rate
+
+   o  change maximum total bandwidth (b=) [OPEN ISSUE: need to clarify
+      if this is CT or AS - see section 5.8 of [RFC4566]]
+
+
 
 
 Uberti & Jennings        Expires August 17, 2014               [Page 35]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-   o  change desired recv resolution or frame rate
-
-   o  change maximum total bandwidth (b=) [OPEN ISSUE: need to clarify
-      if this is CT or AS - see section 5.8 of [RFC4566]]
 
    o  remove desired AVPF mechanisms (a=rtcp-fb)
 
@@ -2009,6 +2004,11 @@ Internet-Draft                    JSEP                     February 2014
    Neil Stratford, Eric Rescorla, Anant Narayanan, Andrew Hutton,
    Richard Ejzak, and Adam Bergkvist all provided valuable feedback on
    this proposal.  Matthew Kaufman provided the observation that keeping
+   state out of the browser allows a call to continue even if the page
+   is reloaded.
+
+
+
 
 
 
@@ -2017,9 +2017,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 36]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-   state out of the browser allows a call to continue even if the page
-   is reloaded.
 
 10.  References
 
@@ -2042,6 +2039,11 @@ Internet-Draft                    JSEP                     February 2014
               Protocol (SDP) Port Numbers", draft-ietf-mmusic-sdp-
               bundle-negotiation-04 (work in progress), June 2013.
 
+   [I-D.ietf-mmusic-sdp-mux-attributes]
+              Nandakumar, S., "A Framework for SDP Attributes when
+              Multiplexing", draft-ietf-mmusic-sdp-mux-attributes-01
+              (work in progress), February 2014.
+
    [I-D.ietf-rtcweb-audio]
               Valin, J. and C. Bran, "WebRTC Audio Codec and Processing
               Requirements", draft-ietf-rtcweb-audio-02 (work in
@@ -2053,11 +2055,6 @@ Internet-Draft                    JSEP                     February 2014
               draft-ietf-rtcweb-rtp-usage-09 (work in progress),
               September 2013.
 
-   [I-D.nandakumar-mmusic-sdp-mux-attributes]
-              Nandakumar, S., "A Framework for SDP Attributes when
-              Multiplexing", draft-nandakumar-mmusic-sdp-mux-
-              attributes-03 (work in progress), July 2013.
-
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
 
@@ -2066,6 +2063,9 @@ Internet-Draft                    JSEP                     February 2014
               Schooler, "SIP: Session Initiation Protocol", RFC 3261,
               June 2002.
 
+   [RFC3264]  Rosenberg, J. and H. Schulzrinne, "An Offer/Answer Model
+              with Session Description Protocol (SDP)", RFC 3264, June
+              2002.
 
 
 
@@ -2073,10 +2073,6 @@ Uberti & Jennings        Expires August 17, 2014               [Page 37]
 
 Internet-Draft                    JSEP                     February 2014
 
-
-   [RFC3264]  Rosenberg, J. and H. Schulzrinne, "An Offer/Answer Model
-              with Session Description Protocol (SDP)", RFC 3264, June
-              2002.
 
    [RFC4145]  Yon, D. and G. Camarillo, "TCP-Based Media Transport in
               the Session Description Protocol (SDP)", RFC 4145,
@@ -2115,6 +2111,10 @@ Internet-Draft                    JSEP                     February 2014
    [RFC6904]  Lennox, J., "Encryption of Header Extensions in the Secure
               Real-time Transport Protocol (SRTP)", RFC 6904, April
               2013.
+
+   [RFC7022]  Begen, A., Perkins, C., Wing, D., and E. Rescorla,
+              "Guidelines for Choosing RTP Control Protocol (RTCP)
+              Canonical Names (CNAMEs)", RFC 7022, September 2013.
 
 10.2.  Informative References
 
